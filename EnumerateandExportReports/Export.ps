@@ -1,1 +1,63 @@
+# Define your Azure AD and Power BI API credentials
+$clientId = "YOUR_CLIENT_ID"
+$clientSecret = "YOUR_CLIENT_SECRET"
+$tenantId = "YOUR_TENANT_ID"
+$resource = "https://analysis.windows.net/powerbi/api"
+$authority = "https://login.microsoftonline.com/$tenantId/oauth2/token"
 
+# Get the authentication token
+$body = @{
+    grant_type    = "client_credentials"
+    client_id     = $clientId
+    client_secret = $clientSecret
+    resource      = $resource
+}
+
+$response = Invoke-RestMethod -Method Post -Uri $authority -ContentType "application/x-www-form-urlencoded" -Body $body
+$token = $response.access_token
+
+# Set the authorization header
+$headers = @{
+    Authorization = "Bearer $token"
+    "Content-Type" = "application/json"
+}
+
+# Get all workspaces
+$workspacesUri = "https://api.powerbi.com/v1.0/myorg/groups"
+$workspaces = Invoke-RestMethod -Method Get -Uri $workspacesUri -Headers $headers
+
+# Enumerate all workspaces and their reports, and export each report as PDF
+foreach ($workspace in $workspaces.value) {
+    Write-Output "Workspace: $($workspace.name)"
+    
+    # Get all reports in the workspace
+    $reportsUri = "https://api.powerbi.com/v1.0/myorg/groups/$($workspace.id)/reports"
+    $reports = Invoke-RestMethod -Method Get -Uri $reportsUri -Headers $headers
+    
+    foreach ($report in $reports.value) {
+        Write-Output "  Report: $($report.name)"
+        
+        # Export the report to PDF
+        $exportUri = "https://api.powerbi.com/v1.0/myorg/groups/$($workspace.id)/reports/$($report.id)/ExportTo"
+        $exportBody = @{
+            format = "PDF"
+        } | ConvertTo-Json
+        
+        $exportResponse = Invoke-RestMethod -Method Post -Uri $exportUri -Headers $headers -Body $exportBody -ContentType "application/json"
+        $exportId = $exportResponse.id
+        
+        # Check the export status
+        $statusUri = "https://api.powerbi.com/v1.0/myorg/groups/$($workspace.id)/reports/$($report.id)/exports/$exportId"
+        do {
+            $statusResponse = Invoke-RestMethod -Method Get -Uri $statusUri -Headers $headers
+            Start-Sleep -Seconds 5
+        } while ($statusResponse.status -ne "Succeeded")
+        
+        # Download the exported PDF file
+        $fileUri = "https://api.powerbi.com/v1.0/myorg/groups/$($workspace.id)/reports/$($report.id)/exports/$exportId/file"
+        $outputPath = "C:\Reports\$($report.name).pdf"
+        Invoke-RestMethod -Method Get -Uri $fileUri -Headers $headers -OutFile $outputPath
+        
+        Write-Output "  Report exported to: $outputPath"
+    }
+}
