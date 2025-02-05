@@ -38,5 +38,5 @@ foreach ($r in $queryresp1.data) {
         $rows += $newRow
     }
 }
-# Export the results array to a CSV file
+# Export the rows array to a CSV file
 $rows | Export-Csv -Path "SQLESU.csv" -NoTypeInformation
