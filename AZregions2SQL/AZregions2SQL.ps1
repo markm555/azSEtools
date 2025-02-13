@@ -1,5 +1,5 @@
 connect-azaccount
-
+$loc = get-azlocation
 # Define the variables for the connection string
 $serverName = "<Your Server Name>"
 $databaseName = "AzureRegions"
