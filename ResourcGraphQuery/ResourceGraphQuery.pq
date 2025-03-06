@@ -1,6 +1,6 @@
 let
     // Query the Azure Resource Graph
-    Source = AzureResourceGraph.Query("Resources | where type =~ 'microsoft.azurearcdata/sqlserverinstances/databases'", null, null, null, [resultTruncated=null]),
+    Source = AzureResourceGraph.Query("<Your Resource Graph Query> <example: Resources | where type =~ 'microsoft.azurearcdata/sqlserverinstances/databases'>", null, null, null, [resultTruncated=null]),
 
     // Recursive function with depth limit
     ExpandColumnifExist = (table as table, columnName as text, prefix as text, depth as number) as table =>
