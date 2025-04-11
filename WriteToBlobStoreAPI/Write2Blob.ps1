@@ -32,7 +32,7 @@ $token = Get-BlobToken -TenantId $TenantId -ClientId $ClientId -ClientSecret $Cl
 # Create a memory stream and write some data into it
 $memoryStream = New-Object System.IO.MemoryStream
 $writer = New-Object System.IO.StreamWriter($memoryStream)
-$writer.Write("Hello, Azure Blob Storage.  I can't believe you finally worked.  Thank God!")
+$writer.Write("Azure Blob Data Goes Here")
 $writer.Flush()
 $memoryStream.Position = 0
 
