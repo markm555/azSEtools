@@ -2,13 +2,14 @@ param (
     [string]$Filetype = "csv",
     [int]$Days = -7, # Number of days to go back, 0 is today, -1 is yesterday, etc.
     [int]$Day = 0,
-    [string] $filter = "",
+    [string]$filter = "",
     [string]$Filepreface = "",
     [string]$StorageAccount = "markmout", # Just what you named it, I will append the rest of the url to it.
     [string]$StorageContainer = "activityevents" # The name of the container you created in Azure Storage
 )
 $type = $filetype.ToLower()
-if ($Days -lt 0)
+
+if ($Days -lt 0)     #if days is a positive number I will change it to a negative to call the API
 {}
 else
 {
@@ -32,6 +33,26 @@ $result = @{
 }
 
 return $result
+}
+
+function Write-to-Blob {
+    param(
+        [string]$BlobUri,
+        [string]$Token,
+        [string]$Data
+    )
+    $headers = @{
+        "x-ms-blob-type" = "BlockBlob"
+        "Authorization" = "Bearer $Token"
+        "x-ms-version" = "2020-10-02"
+        "Content-Type" = "application/octet-stream"
+#                "Content-Length" = $memoryStream.Length
+    }
+    
+    # Make the API call to upload the blob
+    $response = Invoke-RestMethod -Uri $BlobUri -Method Put -Headers $headers -Body $Data 
+
+    return $response
 }
 
 function Get-BlobToken {
@@ -130,29 +151,28 @@ $ClientID = $Credential.Username
 $ClientSecret = $Credential.Password#>
 if ($env:AZUREPS_HOST_ENVIRONMENT -like "*AzureAutomation*") 
 {
-    $TenantId = "<Your Tenant ID"
+    $TenantId = "be4fce45-1eb1-4b38-8c32-9242bde2843c"
     $Credential = Get-AutomationPSCredential -Name "FabricAdmin"
     $ClientID = $Credential.Username
-    $SecureSecret = $Credential.Password
-    $ClientSecret = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureSecret)) 
-
+    $ClientSecret = $Credential.Password
+    $ClientSecret = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($ClientSecret)) 
 
 }
 else
 {
     $TenantId = "<Your Tenant ID>"
     $ClientId = "<Your Client ID>"
-    $ClientSecret = "<Your Client Tenant>"
+    $ClientSecret = <Your Client Secret>"
 }
 
 #****************************************************************
-#*                        Execution Code                        *
-#*              Modify Code here with your values               *
+#*                                                              *
+#*                          Main Loop                           *
+#*                                                              *
 #****************************************************************
 
-$AccessToken = Get-AccessToken -ClientId $ClientId -ClientSecret $ClientSecret -TenantId $TenantId  #  Get Access Token for API calls.  One for the Fabric API 
-$token = Get-BlobToken -TenantId $TenantId -ClientId $ClientId -ClientSecret $ClientSecret          #  and one for the Blob API since they have different scopes
-
+$AccessToken = Get-AccessToken -ClientId $ClientId -ClientSecret $ClientSecret -TenantId $TenantId
+$token = Get-BlobToken -TenantId $TenantId -ClientId $ClientId -ClientSecret $ClientSecret
 $ClientSecret = $null
 
 while ($Day -ge $Days){
@@ -219,18 +239,22 @@ while ($Day -ge $Days){
             #$Data = $flattendEvents | ConvertTo-Json #-NoTypeInformation
             $String = $Data -join "`r`n"
 
+            $response = Write-to-Blob -BlobUri $blobUri -Token $token -Data $String
+
             # Convert CSV string to a byte array
-            $byteArray = [System.Text.Encoding]::UTF8.GetBytes($String)
-           
+            #$byteArray = [System.Text.Encoding]::UTF8.GetBytes($String)
+<#           
             # Set the headers for the API call
             $headers = @{
                 "x-ms-blob-type" = "BlockBlob"
                 "Authorization" = "Bearer $token"
                 "x-ms-version" = "2020-10-02"
                 "Content-Type" = "application/octet-stream"
+#                "Content-Length" = $memoryStream.Length
             }
             
             # Make the API call to upload the blob
             $response = Invoke-RestMethod -Uri $blobUri -Method Put -Headers $headers -Body $String 
+            #>
             $Day = $Day - 1
  }  
