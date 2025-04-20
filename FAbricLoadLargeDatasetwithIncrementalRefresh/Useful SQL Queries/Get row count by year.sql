@@ -2,8 +2,8 @@ SELECT
     YEAR(dt) AS year,
     COUNT(*) AS row_count
 FROM 
-    KDFW
+    <Your table name>
 GROUP BY 
-    YEAR(dt)
+    YEAR(<Your Date Time column>)
 ORDER BY 
     year;
