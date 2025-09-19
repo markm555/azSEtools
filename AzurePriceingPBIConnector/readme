@@ -1,1 +1,60 @@
+# 🧩 Installing a Power BI Custom Connector
+
+This guide walks through installing a Power BI custom connector on both the **Microsoft Store** and **Download (MSI installer)** versions of Power BI Desktop. It includes folder paths, security settings, and troubleshooting tips.
+
+---
+
+## 📁 Folder Locations
+
+| Version                  | Folder Path                                                                 |
+|--------------------------|------------------------------------------------------------------------------|
+| **Microsoft Store**      | `C:\Users\<YourUser>\Documents\Power BI Desktop\Custom Connectors`          |
+| **Download (MSI)**       | `C:\Users\<YourUser>\Documents\Microsoft Power BI Desktop\Custom Connectors`|
+
+> If the `Custom Connectors` folder doesn’t exist, create it manually.
+
+---
+
+## 📦 Installing the Connector
+
+1. Copy your `.mez`, `.pq`, `.pqx`, or `.m` file into the appropriate folder.
+2. Right-click the file → **Properties** → Check **Unblock** if present.
+3. Open Power BI Desktop.
+4. Go to **File** → **Options and settings** → **Options**.
+5. Under **Global** → **Security**, find **Data Extensions**.
+6. Choose one of the following:
+
+| Option                                                                 | Description                                                                 |
+|------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| ✅ **Only allow Microsoft certified and trusted extensions**           | Blocks uncertified connectors unless signed or explicitly allowed.         |
+| ⚠️ **Allow any extension to load without validation**                  | Enables all connectors, including uncertified ones. Use only if trusted.   |
+
+7. Click **OK** and **restart Power BI Desktop**.
+
+---
+
+## 🔐 Security Considerations
+
+- Uncertified connectors may bypass privacy levels and transmit credentials insecurely.
+- Use the “Allow any extension…” setting only if you trust the source.
+- For enterprise deployment, consider **signing the connector** with a certificate.
+
+---
+
+## 🧠 Troubleshooting Tips
+
+- Confirm the file is in the correct folder for your version.
+- Ensure Power BI Desktop is restarted after changing settings.
+- Check for Windows file blocking (Unblock checkbox).
+- Use the latest version of Power BI Desktop.
+
+---
+
+## 📚 References
+
+- [Microsoft Learn: Connector Extensibility in Power BI](https://learn.microsoft.com/en-us/power-bi/connect-data/desktop-connector-extensibility)
+- [Community Guide: Deploying Custom Connectors](https://community.fabric.microsoft.com/t5/Desktop/Deploying-a-custom-connector-to-Power-BI-Desktop/td-p/2837705)
+
+---
+
 
