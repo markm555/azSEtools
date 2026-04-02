@@ -4,7 +4,7 @@ param (
     [int]$Day = 0,
     [string]$filter = "",
     [string]$Filepreface = "",
-    [string]$StorageAccount = "markmout", # Just what you named it, I will append the rest of the url to it.
+    [string]$StorageAccount = "", # Just what you named it, I will append the rest of the url to it.
     [string]$StorageContainer = "activityevents" # The name of the container you created in Azure Storage
 )
 $type = $filetype.ToLower()
