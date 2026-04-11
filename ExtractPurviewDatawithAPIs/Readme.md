@@ -1,16 +1,19 @@
 # Microsoft Purview Data Map API – Fabric Example
 
-> **Status:** Working example  
-> **Purpose:** Demonstrates how to call Microsoft Purview **Data Map (Atlas) APIs** using a Service Principal after populating metadata via a **Microsoft Fabric scan**.  
->
-> **IMPORTANT – EXAMPLE ONLY**
->
-> This repository is provided **for demonstration and learning purposes only**.
-> The script:
-> - Performs **read-only** operations
-> - **Only prints API results to the console**
-> - **Does not** create, update, or delete metadata
-> - Is intended for learning, troubleshooting, and reference
+## ⚠️ Important – Example Only
+
+This repository contains a **worked example** that demonstrates how to call **Microsoft Purview Data Map (Atlas) REST APIs** using a **Service Principal**, after populating metadata via a **Microsoft Fabric scan**.
+
+**This example is intentionally limited in scope.**
+
+The script:
+- ✅ Performs **read‑only operations only**
+- ✅ **Displays API results to the console only**
+- ❌ Does **not** create, update, or delete metadata
+- ❌ Does **not** modify Purview configuration
+- ❌ Is **not** intended as a production framework
+
+This is designed for **learning, troubleshooting, demos, and reference**.
 
 ---
 
