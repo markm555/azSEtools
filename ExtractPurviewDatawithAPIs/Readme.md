@@ -43,3 +43,79 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Microsoft Fabric (Tenant / Workspaces)
+        |
+        |  Fabric Scan (Managed Identity)
+        v
+Microsoft Purview Data Map
+  Domain: Fabric
+  Collection: <fabric-collection>
+        |
+        |  Data Map APIs (read‑only)
+        v
+PowerShell Script
+(Service Principal authentication)
+
+## What This Example Demonstrates
+
+This single script demonstrates:
+
+1. How to populate the **Microsoft Purview Data Map** using **Microsoft Fabric**
+2. How to authenticate to Purview using a **Service Principal (client credentials flow)**
+3. How to successfully call read‑only Purview Data Map APIs:
+   - `types/typedefs`
+   - `search/basic`
+   - `lineage/{guid}`
+
+---
+
+## Critical Purview Concepts
+
+### Domains vs Collections
+
+- **Domains** organize assets (for example: `Fabric`, `On-Premises`)
+- **Collections** are the **authorization boundary** for Purview Data Map APIs
+- **Assets MUST exist in a collection** before API authorization succeeds
+
+⚠️ If a collection contains **zero assets**, Purview Data Map APIs may return:
+
+Even if RBAC permissions appear correct.
+
+---
+
+## Required Permissions
+## To Resolve any 403 errors.
+### 1. Azure Portal – Control Plane (Purview Resource)
+
+Assign the following roles **on the Microsoft Purview account resource**:
+
+| Principal | Role |
+|--------|------|
+| Service Principal | Owner *(or Contributor)* |
+| Service Principal | Reader |
+
+These permissions allow the Service Principal to be recognized by the Purview service.
+
+---
+
+### 2. Purview Studio – Data Map (Data Plane)
+
+Assign the following role **at the collection level** where Fabric assets will be stored:
+
+| Scope | Role |
+|-----|------|
+| Fabric → `<fabric-collection>` | **Purview Data Reader** |
+
+⚠️ Admin roles alone are **not sufficient** for Data Map API access.
+
+---
+
+### 3. Microsoft Fabric Tenant Settings
+
+In **Fabric Admin Portal → Tenant settings**, enable:
+
+- ✅ **Service principals can use read-only admin APIs**
+- ✅ **Enhanced admin API responses**
+
+If required, configure a **security group** that includes the **Purview managed identity**.
